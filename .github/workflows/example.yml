@@ -15,6 +15,6 @@ jobs:
             - uses: actions/checkout@v3
 
             - name: Generate Doras Links
-              uses: dorasto/github-links@v1
+              uses: dorasto/github-links@v1.0.1
               with:
                   username: ${{ env.DORAS_USERNAME }}
