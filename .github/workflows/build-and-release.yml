@@ -35,6 +35,4 @@ jobs:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                   VERSION: ${{ steps.package_version.outputs.version }}
               run: |
-                  gh release create "v${VERSION}" \
-                    --title "Release v${VERSION}" \
-                    --generate-notes
+                  gh release create "v${VERSION}" --title "Release v${VERSION}" --generate-notes --discussion-category "General"
