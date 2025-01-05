@@ -28020,6 +28020,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(7484));
 const axios_1 = __importDefault(__nccwpck_require__(7269));
+const fs = __importStar(__nccwpck_require__(9896));
 async function run() {
     try {
         const username = core.getInput("username") || process.env.DORAS_USERNAME;
@@ -28035,15 +28036,19 @@ async function run() {
             if (link.show) {
                 const iconName = link.icon.split("/").pop()?.replace(".svg", "") || "";
                 markdown += `<a href="${link.url}" target="_blank">`;
-                markdown += `<img src="${link.icon}" width="32" height="32" alt="${link.name}" title="${link.name}" /></a>  `;
+                markdown += `<img src="${link.icon}" width="32" height="32" alt="${link.name}" title="${link.name}" /></a>&nbsp;&nbsp;`;
             }
         });
         markdown += "\n\n</div>";
-        // Write to DORAS_LINKS environment variable
+        // Read existing README
+        const readmePath = "README.md";
+        let readmeContent = fs.readFileSync(readmePath, "utf8");
+        // Update content between markers
+        readmeContent = readmeContent.replace(/<!-- DORAS-LINKS-START -->[\s\S]*<!-- DORAS-LINKS-END -->/, `<!-- DORAS-LINKS-START -->\n${markdown}\n<!-- DORAS-LINKS-END -->`);
+        // Write updated README
+        fs.writeFileSync(readmePath, readmeContent);
+        // Set output
         core.setOutput("markdown", markdown);
-        // Optional: Write directly to a file
-        const fs = __nccwpck_require__(9896);
-        fs.writeFileSync("doras-links.md", markdown);
     }
     catch (error) {
         if (error instanceof Error) {
