@@ -1,5 +1,4 @@
 import * as core from "@actions/core";
-import * as exec from "@actions/exec";
 import axios from "axios";
 import * as fs from "fs";
 
@@ -16,45 +15,41 @@ async function run() {
         const username =
             core.getInput("username") || process.env.DORAS_USERNAME;
 
-        if (!username) {
-            throw new Error("Username is required");
-        }
+        core.info(`Processing for username: ${username}`);
 
         const response = await axios.get(
             `https://doras.to/api/user/${username}/blocks?allblocks=true&filter=type:link`
         );
 
-        const links = response.data;
+        core.info(`Received ${response.data.length} links from API`);
 
         // Generate markdown
         let markdown = "## 🔗 My Links\n\n";
         markdown += '<div align="center">\n\n';
 
-        links.forEach((link: DorasLink) => {
+        response.data.forEach((link: DorasLink) => {
             if (link.show) {
-                const iconName =
-                    link.icon.split("/").pop()?.replace(".svg", "") || "";
                 markdown += `<a href="${link.url}" target="_blank">`;
                 markdown += `<img src="${link.icon}" width="32" height="32" alt="${link.name}" title="${link.name}" /></a>&nbsp;&nbsp;`;
+                core.info(`Added link: ${link.name}`);
             }
         });
 
         markdown += "\n\n</div>";
 
-        // Read existing README
+        // Read and update README
         const readmePath = "README.md";
-        let readmeContent = fs.readFileSync(readmePath, "utf8");
+        core.info(`Reading from ${readmePath}`);
 
-        // Update content between markers
-        readmeContent = readmeContent.replace(
+        const readmeContent = fs.readFileSync(readmePath, "utf8");
+        const updatedContent = readmeContent.replace(
             /<!-- DORAS-LINKS-START -->[\s\S]*<!-- DORAS-LINKS-END -->/,
             `<!-- DORAS-LINKS-START -->\n${markdown}\n<!-- DORAS-LINKS-END -->`
         );
 
-        // Write updated README
-        fs.writeFileSync(readmePath, readmeContent);
+        fs.writeFileSync(readmePath, updatedContent);
+        core.info("README.md updated successfully");
 
-        // Set output
         core.setOutput("markdown", markdown);
     } catch (error) {
         if (error instanceof Error) {
