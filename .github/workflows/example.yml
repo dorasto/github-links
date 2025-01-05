@@ -1,0 +1,20 @@
+name: Update Doras Links
+
+on:
+    workflow_dispatch:
+    schedule:
+        - cron: "0 0 * * *" # Updates daily
+
+env:
+    DORAS_USERNAME: "doras" # Set your username here for scheduled runs
+
+jobs:
+    update-readme:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+
+            - name: Generate Doras Links
+              uses: dorasto/github-links@v1
+              with:
+                  username: ${{ env.DORAS_USERNAME }}
