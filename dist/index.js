@@ -28019,6 +28019,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(7484));
+const exec = __importStar(__nccwpck_require__(5236));
 const axios_1 = __importDefault(__nccwpck_require__(7269));
 const fs = __importStar(__nccwpck_require__(9896));
 async function run() {
@@ -28046,6 +28047,22 @@ async function run() {
         fs.writeFileSync(readmePath, updatedContent);
         core.info("README.md updated successfully");
         core.setOutput("markdown", markdown);
+        await exec.exec("git", [
+            "config",
+            "--local",
+            "user.email",
+            "action@github.com",
+        ]);
+        await exec.exec("git", [
+            "config",
+            "--local",
+            "user.name",
+            "GitHub Action",
+        ]);
+        await exec.exec("git", ["add", "README.md"]);
+        await exec.exec("git", ["commit", "-m", "Update Doras links"]);
+        await exec.exec("git", ["push"]);
+        core.info("Changes committed and pushed");
     }
     catch (error) {
         if (error instanceof Error) {
