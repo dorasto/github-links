@@ -1,0 +1,12 @@
+name: "Doras Link Bio Generator"
+description: "Generate a formatted markdown bio from Doras.to API"
+inputs:
+    username:
+        description: "Doras.to username"
+        required: true
+outputs:
+    markdown:
+        description: "Generated markdown for readme"
+runs:
+    using: "node20"
+    main: "dist/index.js"

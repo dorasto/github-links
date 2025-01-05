@@ -1,0 +1,22 @@
+name: Doras Link Bio Generator
+
+on:
+    workflow_dispatch:
+        inputs:
+            username:
+                description: "Doras.to username"
+                required: true
+            git-email:
+                description: "Git commit email"
+                required: false
+                default: "action@github.com"
+            git-username:
+                description: "Git commit username"
+                required: false
+                default: "GitHub Action"
+
+jobs:
+    update-bio:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4

@@ -1,0 +1,46 @@
+name: Update README with Doras Links
+
+on:
+    workflow_dispatch:
+        inputs:
+            username:
+                description: "Doras.to username"
+                required: true
+            git-email:
+                description: "Git commit email"
+                required: false
+                default: "action@github.com"
+            git-username:
+                description: "Git commit username"
+                required: false
+                default: "GitHub Action"
+    schedule:
+        - cron: "0 0 * * *" # Runs daily
+
+jobs:
+    update-readme:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+
+            - name: Generate Doras Links
+              uses: dorasto/github-links@v1
+              with:
+                  username: ${{ github.event.inputs.username }}
+                  token: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Update README
+              run: |
+                  # Read the generated markdown
+                  DORAS_CONTENT=$(cat doras-links.md)
+
+                  # Update README.md between markers
+                  sed -i '/<!-- DORAS-LINKS-START -->/,/<!-- DORAS-LINKS-END -->/c\<!-- DORAS-LINKS-START -->\n'"$DORAS_CONTENT"'\n<!-- DORAS-LINKS-END -->' README.md
+
+            - name: Commit changes
+              run: |
+                  git config --local user.email "${{ github.event.inputs.git-email || 'action@github.com' }}"
+                  git config --local user.name "${{ github.event.inputs.git-username || 'GitHub Action' }}"
+                  git add README.md
+                  git commit -m "Update Doras links" || exit 0
+                  git push
