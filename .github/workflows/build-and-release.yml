@@ -8,6 +8,7 @@ on:
 jobs:
     build-and-release:
         runs-on: ubuntu-latest
+        permissions: write-all
 
         steps:
             - uses: actions/checkout@v4
@@ -35,4 +36,6 @@ jobs:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                   VERSION: ${{ steps.package_version.outputs.version }}
               run: |
-                  gh release create "v${VERSION}" --title "Release v${VERSION}" --generate-notes --discussion-category "General"
+                  gh release create "v${VERSION}" \
+                    --title "Release v${VERSION}" \
+                    --generate-notes
