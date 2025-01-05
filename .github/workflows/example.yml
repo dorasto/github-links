@@ -11,10 +11,12 @@ env:
 jobs:
     update-readme:
         runs-on: ubuntu-latest
+        permissions:
+            contents: write
         steps:
             - uses: actions/checkout@v4
 
             - name: Generate Doras Links
-              uses: dorasto/github-links@v1.0.4
+              uses: dorasto/github-links@v1.0.5
               with:
                   username: ${{ env.DORAS_USERNAME }}

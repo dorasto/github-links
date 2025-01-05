@@ -1,4 +1,5 @@
 import * as core from "@actions/core";
+import * as exec from "@actions/exec";
 import axios from "axios";
 import * as fs from "fs";
 
@@ -51,6 +52,22 @@ async function run() {
         core.info("README.md updated successfully");
 
         core.setOutput("markdown", markdown);
+        await exec.exec("git", [
+            "config",
+            "--local",
+            "user.email",
+            "action@github.com",
+        ]);
+        await exec.exec("git", [
+            "config",
+            "--local",
+            "user.name",
+            "GitHub Action",
+        ]);
+        await exec.exec("git", ["add", "README.md"]);
+        await exec.exec("git", ["commit", "-m", "Update Doras links"]);
+        await exec.exec("git", ["push"]);
+        core.info("Changes committed and pushed");
     } catch (error) {
         if (error instanceof Error) {
             core.setFailed(error.message);
